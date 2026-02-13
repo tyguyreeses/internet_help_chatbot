@@ -1,60 +1,80 @@
 <style>
-/* Chat Container */
+/* Root variables for colors */
+:root {
+  --chat-bg: #ffffff;
+  --chat-header-bg: #f4f5f6;
+  --chat-border: #d1d5db;
+  --chat-user-bg: #e5e7eb;
+  --chat-bot-bg: #ffffff;
+  --chat-accent: #1f4bb6; /* neutral accent */
+  --chat-text: #1f2937;
+  --chat-input-bg: #f9fafb;
+}
+
+/* Overall chat panel */
 #chat-widget {
-  max-width: 600px;
+  max-width: 620px;
   width: 100%;
-  margin: 40px auto;
-  border-radius: 12px;
-  border: 1px solid #ddd;
+  margin: 28px auto;
+  border: 1px solid var(--chat-border);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   height: 600px;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  background: var(--chat-bg);
+  font-family: inherit; /* use site’s global font */
+  color: var(--chat-text);
+  transition: box-shadow 0.2s;
+}
+
+#chat-widget:hover {
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 /* Header */
 #chat-header {
-  background-color: #2563eb;
-  color: white;
-  padding: 16px;
-  font-size: 18px;
-  font-weight: bold;
+  background: var(--chat-header-bg);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--chat-border);
+  font-size: 16px;
+  font-weight: 600;
   text-align: center;
 }
 
-/* Messages area */
+/* Message area */
 #chat-messages {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
-  background-color: #f9f9f9;
+  background: var(--chat-bg);
   font-size: 14px;
 }
 
 /* Individual messages */
 .message {
-  margin-bottom: 12px;
-  line-height: 1.4;
-  word-wrap: break-word;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  word-break: break-word;
 }
 
 .message.user {
-  text-align: right;
-  color: #111;
+  margin-left: auto;
+  background: var(--chat-user-bg);
 }
 
 .message.bot {
-  text-align: left;
-  color: #2563eb;
+  margin-right: auto;
+  background: var(--chat-bot-bg);
 }
 
 /* Input area */
 #chat-input-area {
   display: flex;
-  border-top: 1px solid #ddd;
-  background-color: #fff;
+  border-top: 1px solid var(--chat-border);
+  background: var(--chat-input-bg);
 }
 
 #chat-input {
@@ -63,40 +83,40 @@
   border: none;
   font-size: 14px;
   outline: none;
+  background: var(--chat-input-bg);
 }
 
 #chat-send {
-  background-color: #2563eb;
+  background: var(--chat-accent);
   color: white;
   border: none;
-  padding: 0 20px;
+  padding: 0 16px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.2s;
+  transition: background 0.15s;
 }
 
 #chat-send:hover {
-  background-color: #1e40af;
+  background: #173a91;
 }
 </style>
 
 <div id="chat-widget">
-  <div id="chat-header">Internet Help Chatbot</div>
+  <div id="chat-header">Internet Support Chat</div>
   <div id="chat-messages"></div>
   <div id="chat-input-area">
-    <input id="chat-input" placeholder="Type your internet issue..." />
+    <input id="chat-input" placeholder="Describe your internet issue…" />
     <button id="chat-send">Send</button>
   </div>
 </div>
 
 <script>
-const API_URL = "https://internet-help-chatbot.onrender.com/chat"; // replace with your backend
+const API_URL = "https://internet-help-chatbot.onrender.com/chat"; // Replace with your endpoint
 
 const messagesDiv = document.getElementById("chat-messages");
 const inputField = document.getElementById("chat-input");
 const sendBtn = document.getElementById("chat-send");
 
-// Add a message to the chat window
 function addMessage(text, type) {
   const msg = document.createElement("div");
   msg.classList.add("message", type);
@@ -105,14 +125,13 @@ function addMessage(text, type) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// Send message to backend
 async function sendMessage() {
   const text = inputField.value.trim();
   if (!text) return;
   addMessage(text, "user");
   inputField.value = "";
 
-  addMessage("...", "bot"); // placeholder for typing
+  addMessage("…", "bot");
   const placeholder = messagesDiv.lastChild;
 
   try {
@@ -124,11 +143,10 @@ async function sendMessage() {
     const data = await res.json();
     placeholder.textContent = data.reply;
   } catch (err) {
-    placeholder.textContent = "Sorry, there was an error connecting to the service.";
+    placeholder.textContent = "Service temporarily unavailable.";
   }
 }
 
-// Event listeners
 sendBtn.addEventListener("click", sendMessage);
 inputField.addEventListener("keypress", function(e) {
   if (e.key === "Enter") sendMessage();
