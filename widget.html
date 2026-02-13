@@ -142,7 +142,7 @@ function removeTyping(typingElement) {
 }
 
 let conversation = [
-  { role: "system", content: "You are a technical support assistant. You ONLY answer internet/connectivity questions." }
+  { role: "system", content: "You are a technical support assistant. You **ONLY** answer questions about internet connectivity, Wi-Fi, routers, modems, ISPs, browsers, online access issues, etc. If aquestion is unrelated, politely refuse and say you only handle internet support."}
 ];
 
 async function sendMessage() {
