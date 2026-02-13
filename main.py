@@ -37,13 +37,22 @@ def health():
 @app.post("/chat")
 async def chat(req: Request):
     data = await req.json()
-    user_message = data.get("conversation", "").strip()
+    conversation = data.get("conversation", [])
 
-    if not user_message:
-        return {"reply": "Please describe your internet issue."}
+    if not conversation:
+        return {"reply": "No conversation received."}
 
-    # Hard topic gate
-    if not KEYWORDS.search(user_message):
+    # Hard topic gate: only check last user message
+    last_user_msg = None
+    for msg in reversed(conversation):
+        if msg["role"] == "user":
+            last_user_msg = msg["content"]
+            break
+
+    if not last_user_msg:
+        return {"reply": "Please provide a user message."}
+
+    if not KEYWORDS.search(last_user_msg):
         return {"reply": "I can only help with internet and connectivity issues."}
 
     try:
@@ -51,14 +60,11 @@ async def chat(req: Request):
             model="gpt-4o-mini",
             temperature=0.2,
             max_tokens=500,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message},
-            ],
+            messages=conversation
         )
-
         reply = response.choices[0].message.content
         return {"reply": reply}
 
     except Exception as e:
         return {"reply": "There was an error processing your request."}
+
