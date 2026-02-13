@@ -1,4 +1,6 @@
-# Internet Help Chatbot (MVP)
+# Internet Help Chatbot
+
+This is a drop in chatbot html widget for a website specifically focusing on helping users fix internet issues.
 
 ## Setup Locally
 
