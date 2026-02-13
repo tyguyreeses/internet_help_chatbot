@@ -17,12 +17,6 @@ app.add_middleware(
 # OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Strict topic filter
-KEYWORDS = re.compile(
-    r"(internet|wifi|wi-fi|router|modem|isp|network|connection|browser|ethernet|latency|speed)",
-    re.I,
-)
-
 SYSTEM_PROMPT = (
     "You are a technical support assistant. "
     "You **ONLY** answer questions about internet connectivity, Wi-Fi, routers, "
@@ -51,9 +45,6 @@ async def chat(req: Request):
 
     if not last_user_msg:
         return {"reply": "Please provide a user message."}
-
-    if not KEYWORDS.search(last_user_msg):
-        return {"reply": "I can only help with internet and connectivity issues."}
 
     try:
         response = client.chat.completions.create(
