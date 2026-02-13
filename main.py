@@ -9,7 +9,7 @@ app = FastAPI()
 # Allow frontend requests (lock to real domain later)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://internethelpdesksupport.com"],
     allow_methods=["POST"],
     allow_headers=["*"],
 )
