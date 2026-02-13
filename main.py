@@ -37,7 +37,7 @@ def health():
 @app.post("/chat")
 async def chat(req: Request):
     data = await req.json()
-    user_message = data.get("message", "").strip()
+    user_message = data.get("conversation", "").strip()
 
     if not user_message:
         return {"reply": "Please describe your internet issue."}
