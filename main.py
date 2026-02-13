@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 import os
-import re
 
 app = FastAPI()
 
@@ -56,6 +55,6 @@ async def chat(req: Request):
         reply = response.choices[0].message.content
         return {"reply": reply}
 
-    except Exception as e:
+    except Exception:
         return {"reply": "There was an error processing your request."}
 
