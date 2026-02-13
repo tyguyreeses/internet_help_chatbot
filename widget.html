@@ -1,0 +1,136 @@
+<style>
+/* Chat Container */
+#chat-widget {
+  max-width: 600px;
+  width: 100%;
+  margin: 40px auto;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Header */
+#chat-header {
+  background-color: #2563eb;
+  color: white;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Messages area */
+#chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  font-size: 14px;
+}
+
+/* Individual messages */
+.message {
+  margin-bottom: 12px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.message.user {
+  text-align: right;
+  color: #111;
+}
+
+.message.bot {
+  text-align: left;
+  color: #2563eb;
+}
+
+/* Input area */
+#chat-input-area {
+  display: flex;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+#chat-input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+}
+
+#chat-send {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+#chat-send:hover {
+  background-color: #1e40af;
+}
+</style>
+
+<div id="chat-widget">
+  <div id="chat-header">Internet Help Chatbot</div>
+  <div id="chat-messages"></div>
+  <div id="chat-input-area">
+    <input id="chat-input" placeholder="Type your internet issue..." />
+    <button id="chat-send">Send</button>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://internet-help-chatbot.onrender.com/chat"; // replace with your backend
+
+const messagesDiv = document.getElementById("chat-messages");
+const inputField = document.getElementById("chat-input");
+const sendBtn = document.getElementById("chat-send");
+
+// Add a message to the chat window
+function addMessage(text, type) {
+  const msg = document.createElement("div");
+  msg.classList.add("message", type);
+  msg.textContent = text;
+  messagesDiv.appendChild(msg);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Send message to backend
+async function sendMessage() {
+  const text = inputField.value.trim();
+  if (!text) return;
+  addMessage(text, "user");
+  inputField.value = "";
+
+  addMessage("...", "bot"); // placeholder for typing
+  const placeholder = messagesDiv.lastChild;
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
+    const data = await res.json();
+    placeholder.textContent = data.reply;
+  } catch (err) {
+    placeholder.textContent = "Sorry, there was an error connecting to the service.";
+  }
+}
+
+// Event listeners
+sendBtn.addEventListener("click", sendMessage);
+inputField.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") sendMessage();
+});
+</script>
