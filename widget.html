@@ -1,77 +1,103 @@
 <style>
 html, body {
-  height: 800px;
+  height: 900px;
   margin: 0;
   padding: 0;
   font-family: 'Source Sans Pro', 'Roboto', sans-serif;
-  background: radial-gradient(circle at 30% 20%, #2c2e3c 0%, #1a1b25 40%, #13141b 100%);
+
+  /* True site-matching neutral black */
+  background: #161616;
   color: #D7DCEB;
 }
 
-/* Widget container */
+#chat-widget-wrapper {
+  position: relative;
+  width: 80vw;
+  max-width: 900px;
+  margin: 10vh auto 0 auto;
+
+  /* Dramatic glow + drop shadow */
+  box-shadow:
+    0 50px 120px rgba(0,0,0,0.9),
+    0 20px 50px rgba(0,0,0,0.7),
+    0 0 50px rgba(255,255,255,0.25),
+    0 30px 50px rgba(79,109,245,0.3);
+  border-radius: 18px;
+}
+
+
 #chat-widget {
   display: flex;
   flex-direction: column;
-  height: 90vh;
-  width: 90vw;
-  max-width: 800px;
-  margin: auto;
-  margin-top: 5vh;
-
-  background: linear-gradient(180deg, #333544 0%, #2a2c39 60%, #252632 100%);
-  border: 1px solid #3A3F58;
+  height: 80vh;
+  width: 100%;
   border-radius: 18px;
-
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.55),
-    0 0 40px rgba(108,115,141,0.15);
-
   overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #23262E 0%,
+    #1E2128 55%,
+    #181B21 100%
+  );
+  border: 1px solid rgba(255,255,255,0.2);
 }
+
 
 /* Header */
 #chat-header {
-  background: linear-gradient(180deg, #3a3f58 0%, #333544 100%);
-  padding: 18px;
-  font-size: 16px;
+  background: linear-gradient(180deg, #262A33 0%, #20232B 100%);
+  padding: 18px 22px;
+  font-size: 15px;
   font-weight: 600;
-  text-align: left;
-  border-bottom: 1px solid #3A3F58;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
   color: #E6EAF7;
 }
 
-/* Messages area */
+/* Messages */
 #chat-messages {
   flex: 1;
-  padding: 24px;
+  padding: 28px;
   overflow-y: auto;
   font-size: 14px;
 }
 
 /* Message bubbles */
 .message {
-  margin-bottom: 14px;
-  line-height: 1.5;
-  max-width: 75%;
-  padding: 12px 16px;
-  border-radius: 14px;
+  margin-bottom: 16px;
+  line-height: 1.55;
+  max-width: 72%;
+  padding: 13px 18px;
+  border-radius: 16px;
   word-break: break-word;
-  border: 1px solid rgba(108,115,141,0.25);
+
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* Bot bubble */
+/* Bot */
 .message.bot {
   margin-right: auto;
-  background: linear-gradient(180deg, #313340 0%, #2c2e3a 100%);
+  background: linear-gradient(
+    180deg,
+    #2A2D36 0%,
+    #24262D 100%
+  );
   color: #D7DCEB;
 }
 
-/* User bubble */
+/* User */
 .message.user {
   margin-left: auto;
-  background: linear-gradient(180deg, #5b74c6 0%, #4f63a8 100%);
+  background: linear-gradient(
+    180deg,
+    #5B74D6 0%,
+    #4F63A8 100%
+  );
   color: #ffffff;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow:
+    0 6px 20px rgba(79,99,168,0.35);
 }
 
 /* Typing dots */
@@ -79,11 +105,12 @@ html, body {
   display: inline-block;
   width: 6px;
   height: 6px;
-  margin: 0 2px;
+  margin: 0 3px;
   background-color: #5B7CFF;
   border-radius: 50%;
   animation: blink 1s infinite;
 }
+
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
@@ -95,22 +122,33 @@ html, body {
 /* Input area */
 #chat-input-area {
   display: flex;
-  padding: 16px;
-  background: #252632;
-  border-top: 1px solid #3A3F58;
+  padding: 18px 22px;
+  background: #171A20;
+  border-top: 1px solid rgba(255,255,255,0.2);
 }
 
 /* Input field */
 #chat-input {
   flex: 1;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #3A3F58;
-  background: #1F212B;
+  padding: 15px 16px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(255,255,255,0.2);
+  background: linear-gradient(180deg, #14171C 0%, #101317 100%);
   color: #D7DCEB;
   font-size: 14px;
   outline: none;
-  margin-right: 10px;
+  margin-right: 12px;
+
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.65);
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+#chat-input:focus {
+  border: 1px solid #5B7CFF;
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,0.65),
+    0 0 16px rgba(91,124,255,0.35);
 }
 
 #chat-input::placeholder {
@@ -122,25 +160,33 @@ html, body {
   background: linear-gradient(180deg, #5B7CFF 0%, #4F6DF5 100%);
   color: #ffffff;
   border: none;
-  padding: 0 22px;
-  cursor: pointer;
+  padding: 0 26px;
   font-size: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 24px rgba(79,109,245,0.4);
+
   transition: all 0.2s ease;
 }
 
 #chat-send:hover {
   background: linear-gradient(180deg, #4F6DF5 0%, #3F5CE0 100%);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 32px rgba(79,109,245,0.5);
 }
 </style>
 
-<div id="chat-widget">
-  <div id="chat-header">Internet Support Chat</div>
-  <div id="chat-messages"></div>
-  <div id="chat-input-area">
-    <input id="chat-input" placeholder="Type your internet issue..." />
-    <button id="chat-send">Send</button>
+<div id="chat-widget-wrapper">
+  <div id="chat-widget">
+    <div id="chat-header">Internet Support Chat</div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+      <input id="chat-input" placeholder="Type your internet issue..." />
+      <button id="chat-send">Send</button>
+    </div>
   </div>
 </div>
 
