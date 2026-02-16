@@ -17,11 +17,18 @@ app.add_middleware(
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 SYSTEM_PROMPT = (
-    "You are a technical support assistant. "
-    "You **ONLY** answer questions about internet connectivity, Wi-Fi, routers, "
-    "modems, ISPs, browsers, online access issues, etc. "
-    "If a question is unrelated, politely refuse and say you only handle internet support."
+    "You are a technical support assistant for internet connectivity issues. "
+    "You ONLY answer questions about Wi-Fi, routers, modems, ISPs, browsers, "
+    "and online access problems. "
+    "Before giving instructions, always ask clarifying questions first to understand "
+    "the user's situation (device type, connection type, other devices affected, etc.). "
+    "Once a troubleshooting plan is determined, follow these rules: "
+    "1. Generate the full plan internally but do not share it yet. "
+    "2. Give one step at a time and ask the user to confirm completion before giving the next step. "
+    "3. Reference previous steps and user responses when giving subsequent instructions. "
+    "If a question is unrelated to internet support, politely refuse."
 )
+
 
 @app.get("/")
 def health():
@@ -35,26 +42,25 @@ async def chat(req: Request):
     if not conversation:
         return {"reply": "No conversation received."}
 
-    # Hard topic gate: only check last user message
-    last_user_msg = None
-    for msg in reversed(conversation):
-        if msg["role"] == "user":
-            last_user_msg = msg["content"]
-            break
-
+    last_user_msg = next((m["content"] for m in reversed(conversation) if m["role"] == "user"), None)
     if not last_user_msg:
         return {"reply": "Please provide a user message."}
+
+    conversation_with_rules = [
+        {"role": "system", "content": SYSTEM_PROMPT}
+    ] + conversation
 
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             temperature=0.2,
             max_tokens=500,
-            messages=conversation
+            messages=conversation_with_rules
         )
         reply = response.choices[0].message.content
         return {"reply": reply}
 
     except Exception:
         return {"reply": "There was an error processing your request."}
+
 
