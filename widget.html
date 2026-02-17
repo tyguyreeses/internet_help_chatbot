@@ -119,6 +119,31 @@ html, body {
   40% { opacity: 1; }
 }
 
+.quick-questions {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quick-btn {
+  background: linear-gradient(180deg, #2F3440 0%, #262B35 100%);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #D7DCEB;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.quick-btn:hover {
+  border: 1px solid #5B7CFF;
+  box-shadow: 0 0 12px rgba(91,124,255,0.25);
+  transform: translateY(-1px);
+}
+
 /* Input area */
 #chat-input-area {
   display: flex;
@@ -222,16 +247,53 @@ function removeTyping(typingElement) {
   typingElement.remove();
 }
 
+let hasUserMessaged = false;
+let welcomeElement = null;
+
+function showWelcomeMessage() {
+  welcomeElement = document.createElement("div");
+  welcomeElement.classList.add("message", "bot");
+  welcomeElement.id = "welcome-message";
+
+  welcomeElement.innerHTML = `
+    <h3>Welcome to Internet Help Desk!</h3>
+    <p>I can help you fix issues fast — no waiting on hold.</p>
+    <p><strong>Try asking:</strong></p>
+
+    <div class="quick-questions">
+      <button class="quick-btn">Why is my internet so slow right now?</button>
+      <button class="quick-btn">My Wi-Fi keeps disconnecting. How do I fix it?</button>
+      <button class="quick-btn">My router shows red lights. What does that mean?</button>
+    </div>
+  `;
+
+  messagesDiv.appendChild(welcomeElement);
+
+  // Attach click handlers
+  const buttons = welcomeElement.querySelectorAll(".quick-btn");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      inputField.value = btn.textContent;
+      sendMessage();
+    });
+  });
+}
+
+
 let conversation = [];
 
 async function sendMessage() {
   const text = inputField.value.trim();
   if (!text) return;
 
+  if (!hasUserMessaged) {
+    hasUserMessaged = true;
+    if (welcomeElement) welcomeElement.remove();
+  }
+
   addMessage(text, "user");
   inputField.value = "";
 
-  // Add user message to conversation
   conversation.push({ role: "user", content: text });
 
   const typingEl = showTyping();
@@ -242,12 +304,11 @@ async function sendMessage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ conversation: conversation })
     });
+
     const data = await res.json();
     removeTyping(typingEl);
 
     addMessage(data.reply, "bot");
-
-    // Add bot reply to conversation
     conversation.push({ role: "assistant", content: data.reply });
 
   } catch (err) {
@@ -256,6 +317,8 @@ async function sendMessage() {
   }
 }
 
+
+showWelcomeMessage();
 sendBtn.addEventListener("click", sendMessage);
 inputField.addEventListener("keypress", function(e) {
   if (e.key === "Enter") sendMessage();
