@@ -1,11 +1,10 @@
 <style>
 html, body {
   height: 900px;
+  width: 100vw;
   margin: 0;
   padding: 0;
   font-family: 'Source Sans Pro', 'Roboto', sans-serif;
-
-  /* True site-matching neutral black */
   background: #161616;
   color: #D7DCEB;
 }
@@ -13,10 +12,8 @@ html, body {
 #chat-widget-wrapper {
   position: relative;
   width: 80vw;
-  max-width: 900px;
+  display: flex;
   margin: 10vh auto 0 auto;
-
-  /* Dramatic glow + drop shadow */
   box-shadow:
     0 50px 120px rgba(0,0,0,0.9),
     0 20px 50px rgba(0,0,0,0.7),
@@ -29,6 +26,7 @@ html, body {
 #chat-widget {
   display: flex;
   flex-direction: column;
+  flex: 1;
   height: 80vh;
   width: 100%;
   border-radius: 18px;
@@ -46,13 +44,44 @@ html, body {
 /* Header */
 #chat-header {
   background: linear-gradient(180deg, #262A33 0%, #20232B 100%);
-  padding: 18px 22px;
+  padding: 16px 22px 14px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-title {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.3px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
   color: #E6EAF7;
 }
+
+.header-sub {
+  font-size: 12px;
+  color: #9FA7C5;
+  margin-left: 22px; /* aligns under title text */
+}
+
+/* Glowing status dot */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2EFF7A;
+  box-shadow:
+    0 0 8px rgba(46,255,122,0.9),
+    0 0 16px rgba(46,255,122,0.6),
+    0 0 24px rgba(46,255,122,0.4);
+}
+
 
 /* Messages */
 #chat-messages {
@@ -61,6 +90,7 @@ html, body {
   overflow-y: auto;
   font-size: 14px;
 }
+
 
 /* Message bubbles */
 .message {
@@ -202,14 +232,50 @@ html, body {
   box-shadow:
     0 14px 32px rgba(79,109,245,0.5);
 }
+
+@media (max-width: 768px) {
+  html, body {
+    height: 500px;
+  }
+
+  #chat-widget-wrapper {
+    margin: 0;
+    width: 95vw;
+    box-shadow: none;
+  }
+
+  #chat-widget {
+    height: 90vh;
+  }
+
+  .quick-questions-label {
+    display: none;
+  }
+
+  .quick-questions {
+    display: none;
+  }
+
+  #chat-send {
+    padding: 0 15px;
+    font-size: 14px;
+  }
+}
+
 </style>
 
 <div id="chat-widget-wrapper">
   <div id="chat-widget">
-    <div id="chat-header">Internet Support Chat</div>
+    <div id="chat-header">
+      <div class="header-main">
+        <span class="status-dot"></span>
+        <span class="header-title">Internet Help Desk AI Assistant</span>
+      </div>
+      <div class="header-sub">Online now</div>
+    </div>
     <div id="chat-messages"></div>
     <div id="chat-input-area">
-      <input id="chat-input" placeholder="Type your internet issue..." />
+      <input id="chat-input" placeholder="Describe the issue" />
       <button id="chat-send">Send</button>
     </div>
   </div>
@@ -218,7 +284,7 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
-const API_URL = "https://internet-help-chatbot.onrender.com/chat"; // replace with your backend
+const API_URL = "https://internet-help-chatbot.onrender.com/chat";
 
 const messagesDiv = document.getElementById("chat-messages");
 const inputField = document.getElementById("chat-input");
@@ -258,7 +324,7 @@ function showWelcomeMessage() {
   welcomeElement.innerHTML = `
     <h3>Welcome to Internet Help Desk!</h3>
     <p>I can help you fix issues fast — no waiting on hold.</p>
-    <p><strong>Try asking:</strong></p>
+    <p class="quick-questions-label"><strong>Try asking:</strong></p>
 
     <div class="quick-questions">
       <button class="quick-btn">Why is my internet so slow right now?</button>
